@@ -2,6 +2,7 @@
 #define STANDARDBANKINGSYSTEM_HPP
 
 #include <string>
+#include <set>
 
 #include "StrategicBankingSystem.hpp"
 #include "BankRegulator.hpp"
@@ -25,6 +26,10 @@ public:
     virtual DepositorPointerVector& getDepositors(void);
     virtual FirmPointerVector& getFirms(void);
     virtual RiskyAssetMarket& getAssetMarket(void);
+
+    virtual void reactivateBanks(void);
+    virtual void deactivateBank(int bankId);
+    virtual BankPointerVector& getActiveBanks(void);
 
     virtual int howManyBanks();
     virtual int howManyDepositors();
@@ -57,6 +62,9 @@ private:
     BankPointerVector banks;
     DepositorPointerVector depositors;
     FirmPointerVector firms;
+
+    BankPointerVector activeBanks;
+    std::set<int> inactiveBanks;
 
     BankRegulator centralBank;
     RiskyAssetMarket assetMarket;

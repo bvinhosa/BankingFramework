@@ -5,11 +5,16 @@
 
 class LearningCycle : public Cyclic {
 public:
-    LearningCycle(Iterable& givenIterable);
+    LearningCycle(long totalCyclesAllReps, Iterable& givenIterable);
     virtual void cycle(StrategicBankingSystem& system);
     virtual void iterate(StrategicBankingSystem& system);
     virtual Iterable& getIterable(void);
 private:
+    void reportProgress(void);
+
+    long reportControl;
+    long numCyclesAllReps;
+    long totalCyclesElapsed=0;
     Iterable& myIterable;
 };
 

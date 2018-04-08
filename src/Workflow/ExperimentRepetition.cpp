@@ -3,6 +3,7 @@
 #include <iostream>
 #include <sstream>
 #include <algorithm>
+#include <cassert>
 
 #include "../Economy/StrategicBankingSystem.hpp"
 #include "../Util/ProbDistrib.hpp"
@@ -23,9 +24,9 @@ ExperimentRepetition::ExperimentRepetition(Cyclic& givenCyclic,
 }
 
 void ExperimentRepetition::repeat(StrategicBankingSystem &system) {
-    cout << "ExperimentRepetition::repeat" << endl;
+    //cout << "ExperimentRepetition::repeat" << endl;
 
-    int numModerates = 3, numSeveres = 2;
+    int numModerates = 2, numSeveres = 1;
     double capModerate = 0.04, liqModerate = 0.02;
     double capSevere = 0.02, liqSevere = 0.01;
 
@@ -58,7 +59,7 @@ void ExperimentRepetition::repeat(StrategicBankingSystem &system) {
                                                     liqModerate);
     BankStrategy* severeStress = new BankStrategy(capSevere,
                                                   liqSevere);
-    BankPointerVector nullBanks;
+
     vector<IntelligentBank*> mdBanks, sdBanks;
 
     // get Id of severely distressed and moderately distressed banks
@@ -72,16 +73,14 @@ void ExperimentRepetition::repeat(StrategicBankingSystem &system) {
     mdBanks = distressedBanks.first;
     sdBanks = distressedBanks.second;
 
-
-    for (auto& agent : system.getStrategicAgents())
+    for (auto * agent : system.getStrategicAgents())
         agent->suspendLearning();
 
-
      // modify those ratios
-     for (auto & moderatelyDistressedBank : mdBanks)
+     for (auto * moderatelyDistressedBank : mdBanks)
          //cout << dynamic_cast<IntelligentBank*>(moderatelyDistressedBank)->toString() << endl;
          dynamic_cast<IntelligentBank*>(moderatelyDistressedBank)->forceStrategy(moderateStress);
-     for (auto & severelyDistressedBank : sdBanks)
+     for (auto * severelyDistressedBank : sdBanks)
          //cout << dynamic_cast<IntelligentBank*>(severelyDistressedBank)->toString() << endl;
          dynamic_cast<IntelligentBank*>(severelyDistressedBank)->forceStrategy(severeStress);
 
@@ -95,9 +94,8 @@ void ExperimentRepetition::repeat(StrategicBankingSystem &system) {
 
      // now the severely distressed banks are "resolved" (made null)
      // severely distressed banks
-     for(int i = 0; i < sdBanks.size(); i++){
-         std::replace(allBanks.begin(),allBanks.end(),(Bank*)sdBanks[i], nullBanks[i]);
-     }
+    for(int i = 0; i < sdBanks.size(); i++)
+        system.deactivateBank(sdBanks[i]->getBankId());
 
      // run the "timely resolution" iteration
      system.prepareForIteration();
@@ -108,24 +106,21 @@ void ExperimentRepetition::repeat(StrategicBankingSystem &system) {
      //set the system back to normal:
 
      // swap the the resolved banks back to the system.
-     for(int i = 0; i < sdBanks.size(); i++){
-         std::replace(allBanks.begin(),allBanks.end(),nullBanks[i],(Bank*)sdBanks[i]);
-     }
+    system.reactivateBanks();
 
      //free strategies
-     for (auto & moderatelyDistressedBank : mdBanks)
+     for (auto * moderatelyDistressedBank : mdBanks)
          (dynamic_cast<IntelligentBank*>(moderatelyDistressedBank))->freeStrategies();
-     for (auto & severelyDistressedBank : sdBanks)
+     for (auto * severelyDistressedBank : sdBanks)
          (dynamic_cast<IntelligentBank*>(severelyDistressedBank))->freeStrategies();
 
      system.operationalReset();
 
     // resume learning
-    for (auto& agent : system.getStrategicAgents()){
+    for (auto * agent : system.getStrategicAgents()){
         agent->resumeLearning();
         agent->resetExperience();
     }
-
 
 }
 

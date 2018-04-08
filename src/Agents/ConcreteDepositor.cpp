@@ -3,6 +3,8 @@
 #include <set>
 
 #include <sstream>
+#include <cmath>
+#include <cassert>
 
 #include "Bank.hpp"
 
@@ -60,9 +62,11 @@ void ConcreteDepositor::reset(void){
     active=true;
 
     deposits.clear();
+    bankRunInfo.clear();
 }
 
 void ConcreteDepositor::receiveMoney(double amount) {
+    assert(!std::isnan(amount));
     currencyInPossession += amount;
     overallEndowment += amount;
 }
@@ -76,7 +80,19 @@ void ConcreteDepositor::setUpWithdrawal(double proportionToWithdraw){
 }
 
 double ConcreteDepositor::getReturnOnDeposit(void){
-    return (currencyInPossession/overallEndowment);
+    double returnOnDeposit;
+
+    assert(!std::isnan(currencyInPossession));
+    assert(!std::isnan(overallEndowment));
+
+    if(overallEndowment <= 0.0 )
+        returnOnDeposit = 0.0;
+    else returnOnDeposit = (currencyInPossession - overallEndowment)
+                           / overallEndowment;
+
+    assert(!std::isnan(returnOnDeposit));
+
+    return returnOnDeposit;
 }
 
 void ConcreteDepositor::assessWithdrawal(void){
@@ -144,10 +160,11 @@ void ConcreteDepositor::requestWithdrawal(Bank *bank){
     requestWithdrawal(bank, deposits[bank]);
 }
 void ConcreteDepositor::makeDeposit(Bank *bank,
-                                    double amount) {
+                                    double intentToDeposit) {
 
     //depositors cant't deposit more than what they possess
-    double amountToDeposit = std::min(amount,currencyInPossession);
+    double amountToDeposit = std::min(intentToDeposit,currencyInPossession);
+    assert(!std::isnan(amountToDeposit));
     currencyInPossession -= amountToDeposit;
     totalDeposits += amountToDeposit;
 
@@ -161,10 +178,11 @@ void ConcreteDepositor::depositAllMoney(Bank *bank) {
 
     makeDeposit(bank,currencyInPossession);
 }
-void ConcreteDepositor::receiveWithdrawal(Bank *bank, double amount){
-    deposits[bank] -=amount;
-    totalDeposits -= amount;
-    currencyInPossession += amount;
+void ConcreteDepositor::receiveWithdrawal(Bank *bank, double withdrawnAmount){
+    assert(!std::isnan(withdrawnAmount));
+    deposits[bank] -=withdrawnAmount;
+    totalDeposits -= withdrawnAmount;
+    currencyInPossession += withdrawnAmount;
 }
 
 std::string ConcreteDepositor::toString(void) const{
@@ -199,7 +217,11 @@ RunDiagnosticVector ConcreteDepositor::getBankRuns(void) {
 
 void ConcreteDepositor::setRun(Bank *bank) {
     double capitalAtRun = (bank->getCapital() / bank->getTotalAssets());
-    double liquidityAtRun = (bank->getCapital() / bank->getTotalAssets());
+    double liquidityAtRun = (bank->getLiquidAssets() / bank->getTotalAssets());
     DepositorRunDiagnostic thisRun = {bank, capitalAtRun, liquidityAtRun};
     bankRunInfo.push_back(thisRun);
+}
+
+double ConcreteDepositor::getThreshold(void) {
+    return threshold;
 }

@@ -40,7 +40,7 @@ StandardBankingSystem::StandardBankingSystem(Parameters params,
     std::set<Strategy*> BankStrategySet;
     std::set<Strategy*> DepositorStrategySet;
 
-    for(int i = 0; i < 10; i++){
+    for(int i = 0; i < 20; i++){
         for(int j = 0; j < 10; j++){
             Strategy* bankStrategy = new BankStrategy(0.01*(i+1),0.01*(j+1));
             BankStrategySet.insert(bankStrategy);
@@ -125,6 +125,9 @@ void StandardBankingSystem::operationalReset(void){
         depositor->reset();
     for(auto & firm: firms)
         firm->reset();
+
+    activeBanks.clear();
+    inactiveBanks.clear();
 }
 
 BankPointerVector&
@@ -155,7 +158,13 @@ StandardBankingSystem::getStrategicAgents(void){
 void
 StandardBankingSystem::prepareForIteration(void) {
 
+    numDepositRelationships = 0;
+
     for (Bank* bank: banks) {
+
+        if(inactiveBanks.find(bank->getBankId()) != inactiveBanks.end())
+            continue;
+        activeBanks.push_back(bank);
 
         bank->raiseCapital(bank->getInitialEquity());
 
@@ -198,6 +207,18 @@ StandardBankingSystem::createLoans(Bank* bank, double banksLoans){
             bank->grantLoanToFirm(firm, thisLoan);
         }
     }
+}
+
+void StandardBankingSystem::reactivateBanks(void){
+    inactiveBanks.clear();
+}
+
+void StandardBankingSystem::deactivateBank(int bankId){
+    inactiveBanks.insert(bankId);
+}
+
+BankPointerVector& StandardBankingSystem::getActiveBanks(void){
+    return activeBanks;
 }
 
 

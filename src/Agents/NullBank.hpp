@@ -4,7 +4,7 @@
 #include "Bank.hpp"
 
 class NullBank : public Bank {
-
+public:
     virtual int getId(void) const;
     virtual std::string getName(void) const;
     virtual std::string toString(void) const;

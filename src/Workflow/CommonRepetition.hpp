@@ -12,6 +12,7 @@ public:
     std::string getFinalResults(void);
 private:
     const int cyclesPerRepetition;
+    const int postLearningIterations=100;
     Cyclic& myCyclic;
     Analyzer theAnalyzer;
 };

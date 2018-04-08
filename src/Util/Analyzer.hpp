@@ -16,6 +16,7 @@ private:
     unsigned int numReps=0;
     unsigned int numBanksTimesReps=0;
     unsigned int numDeposTimesReps=0;
+    unsigned int numDeposRelatTimesReps = 0;
 
     unsigned int totalInsolvencies=0;
     unsigned int totalIlliquidityEvents=0;
@@ -31,6 +32,12 @@ private:
 
     std::vector<double> observedCapitalAtLiquidation;
     std::vector<double> observedLiquidityAtLiquidation;
+
+    std::vector<double> observedCapitalAtRun;
+    std::vector<double> observedLiquidityAtRun;
+
+    std::vector<double> depositorProfit;
+    std::vector<double> chosenRunThreshold;
 };
 
 

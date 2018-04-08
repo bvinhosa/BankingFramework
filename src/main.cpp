@@ -7,20 +7,19 @@
 
 int main() {
 
-    StandardBankingSystem::Parameters params = {10, 5, 5};
-    std::vector<double> sizes = {1.0,1.0,1.0,1.0,1.0,
-                                 1.0,1.0,1.0,1.0,1.0};
+    std::vector<double> bankSizes = {1.0,1.0,1.0,1.0,1.0};
+    //1.0,1.0,1.0,1.0,1.0};
     /*1.0,1.0,1.0,1.0,1.0,
-    1.0,1.0,1.0,1.0,1.0,
-    1.0,1.0,1.0,1.0,1.0,
-    1.0,1.0,1.0,1.0,1.0,
-    1.0,1.0,1.0,1.0,1.0,
-    1.0,1.0,1.0,1.0,1.0,
     1.0,1.0,1.0,1.0,1.0,
     1.0,1.0,1.0,1.0,1.0};*/
 
+    StandardBankingSystem::Parameters params = {(int)bankSizes.size(),
+                                                10,
+                                                5};
+
+
     ProbDistrib::instance();
-    Workflow *wf = new LearningExperimentWorkflow(10,10,params,sizes);
+    Workflow *wf = new LearningExperimentWorkflow(10,100,params,bankSizes);
     wf->execute();
     std::cout << wf->exportResultsToString() << std::endl;
     delete wf;

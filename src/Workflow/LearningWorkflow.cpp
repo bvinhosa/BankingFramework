@@ -5,7 +5,7 @@ LearningWorkflow::LearningWorkflow(int numReps,
                                    int cyclesPerRep,
                                    StandardBankingSystem::Parameters params,
                                    std::vector<double> sizes) :
-        theCycle(theIteration),
+        theCycle(numReps*cyclesPerRep, theIteration),
         theRepetition(theCycle,cyclesPerRep),
         numRepetitions(numReps),
         theSystem(params,sizes) {

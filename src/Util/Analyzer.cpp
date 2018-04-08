@@ -19,11 +19,12 @@ string Analyzer::toString() {
 
     double bankRunFrequency =
             ((double)totalBankRuns) /
-            ((double)numDeposTimesReps);
+            ((double)numDeposRelatTimesReps);
 
     analysis << "Number of Repetitions: " << numReps << std::endl;
     analysis << "Number of Banks-Reps: " << numBanksTimesReps << std::endl;
-    analysis << "Number of Depos-Reps: " << numDeposTimesReps << std::endl;
+    analysis << "Number of Depositors-Reps: " << numDeposTimesReps << std::endl;
+    analysis << "Number of Deposits-Reps: " << numDeposRelatTimesReps << std::endl;
 
     analysis << "Total insolvencies: " << totalInsolvencies << std::endl;
     analysis << "Total illiquidity events: " << totalIlliquidityEvents << std::endl;
@@ -31,9 +32,10 @@ string Analyzer::toString() {
 /*
     analysis << "Regulatory insolvencies: " << regulatorylInsolvencies << std::endl;
     analysis << "Regulatory illiquidity events: " << regulatoryIlliquidityEvents << std::endl;
+*/
 
     analysis << "Total Bank Runs: " << totalBankRuns << std::endl;
-*/
+
     analysis 	<< "Total insolvency frequency: "
                  << insolvencyFrequency << std::endl;
     analysis 	<< "Total bank run frequency: "
@@ -77,33 +79,31 @@ string Analyzer::toString() {
     analysis	<< "Bank liquidity observed at regulatory illiquidity: " << std::endl <<
                  SampleStatistics::sampleMetricsString(observedLiquidityAtRegIlliquidity)
                  << std::endl;
-
+*/
     analysis 	<< "Bank capital observed by depositors at time of run: "
                  << SampleStatistics::sampleMean(observedCapitalAtRun)
                  << std::endl;
     analysis	<< "Bank liquidity observed by depositors at time of run: "
                  << SampleStatistics::sampleMean(observedLiquidityAtRun)
                  << std::endl;
-*/
+
     analysis 	<< "Banks' Mean Chosen Capital: " <<
                  SampleStatistics::sampleMean(chosenCapital) << std::endl;
-    analysis 	<< "Banks' Mean Chosen Liquidity: " <<
-                 SampleStatistics::sampleMean(chosenLiquidity) << std::endl;
-/*
+
     analysis 	<< "Depositors' Chosen Run Threshold: " <<
                  SampleStatistics::sampleMean(chosenRunThreshold) << std::endl;
-*/
+
     analysis 	<< "Banks' Mean Profit: " <<
                  SampleStatistics::sampleMean(bankProfit) << std::endl;
     analysis 	<< "Mean Profit of banks that were not liquidated: " <<
                  SampleStatistics::sampleMean(nonLiquidatedBankProfit) << std::endl;
     analysis 	<< "Mean Profit of banks that were liquidated: " <<
                  SampleStatistics::sampleMean(liquidatedBankProfit) << std::endl;
-/*
+
     analysis 	<< "Depositors' Profit: " << std::endl <<
                  SampleStatistics::sampleMetricsString(depositorProfit)
                  << std::endl;
-
+/*
     analysis 	<< "Profit of Depositors who ran: " << std::endl <<
                  SampleStatistics::sampleMetricsString(depositorRanProfit)
                  << std::endl;
@@ -141,6 +141,7 @@ void Analyzer::respondEndOfRepetition(BankingSystem &system) {
 
     numBanksTimesReps += system.howManyBanks();
     numDeposTimesReps += system.howManyDepositors();
+    numDeposRelatTimesReps += system.howManyDeposits();
 
     ////regulatorylInsolvencies += centralBank->getRegulatoryCapitalLiquidationCounter();
     ////totalInsolvencies += centralBank->getRegulatoryCapitalLiquidationCounter();
@@ -166,9 +167,26 @@ void Analyzer::respondEndOfRepetition(BankingSystem &system) {
 
             observedLiquidityAtLiquidation.push_back(bank->getLiquidityAtFailure());
             observedCapitalAtLiquidation.push_back(bank->getCapitalAtFailure());
+
+
         }
         else{
             nonLiquidatedBankProfit.push_back(bank->getReturnOnEquity());
+        }
+    }
+
+    for(Depositor* depositor : system.getDepositors()){
+
+        double currentProfit = depositor->getReturnOnDeposit();
+
+        chosenRunThreshold.push_back(depositor->getThreshold());
+        depositorProfit.push_back(currentProfit);
+
+        for(auto & bankRunInfo: depositor->getBankRuns()){
+            totalBankRuns++;
+
+            observedCapitalAtRun.push_back(bankRunInfo.capitalAtRun);
+            observedLiquidityAtRun.push_back(bankRunInfo.liquidityAtRun);
         }
     }
 }

@@ -22,12 +22,27 @@ void CommonRepetition::repeat(StrategicBankingSystem &system) {
             system.getStrategicAgents();
 
     for(StrategicAgent* agent: agentPtrVector)
+        agent->suspendLearning();
+
+    for (int i = 0; i < postLearningIterations; i++){
+        for(StrategicAgent* agent: agentPtrVector)
+            agent->setUpForSimulation();
+        system.prepareForIteration();
+        myCyclic.iterate(system);
+        theAnalyzer.respondEndOfRepetition(system);
+        system.operationalReset();
+    }
+
+    for(StrategicAgent* agent: agentPtrVector)
+        agent->resumeLearning();
+/*
+    for(StrategicAgent* agent: agentPtrVector)
         agent->setUpForSimulation();
 
     system.prepareForIteration();
     myCyclic.iterate(system);
     theAnalyzer.respondEndOfRepetition(system);
-    system.operationalReset();
+    system.operationalReset();*/
 }
 
 std::string CommonRepetition::getFinalResults(void){

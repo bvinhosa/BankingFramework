@@ -4,8 +4,19 @@
 #include "../Economy/StrategicBankingSystem.hpp"
 
 
-LearningCycle::LearningCycle(Iterable &givenIterable) :
+LearningCycle::LearningCycle(long totalCyclesAllReps,
+                             Iterable& givenIterable) :
+        numCyclesAllReps(totalCyclesAllReps),
         myIterable(givenIterable){
+
+    if(numCyclesAllReps <= 100)
+        reportControl = numCyclesAllReps;
+    else if (numCyclesAllReps <= 10000)
+        reportControl = 10;
+    else if (numCyclesAllReps <= 100000)
+        reportControl = 100;
+    else
+        reportControl = numCyclesAllReps / 10000;
 }
 
 void LearningCycle::cycle(StrategicBankingSystem& system) {
@@ -46,6 +57,9 @@ void LearningCycle::cycle(StrategicBankingSystem& system) {
         intelligentAgent->learnFromExperience();
         intelligentAgent->revertToFactual();
     }
+
+    totalCyclesElapsed++;
+    reportProgress();
 }
 
 void LearningCycle::iterate(StrategicBankingSystem& system){
@@ -56,6 +70,14 @@ void LearningCycle::iterate(StrategicBankingSystem& system){
     //system.operationalReset();
 }
 
+void LearningCycle::reportProgress(void){
+    if((totalCyclesElapsed % reportControl) != 0)
+        return;
+
+    double cyclePercentage = ((double)totalCyclesElapsed /
+                              (double)numCyclesAllReps)*100.0;
+    std::cout << cyclePercentage << "% elapsed" << std::endl;
+}
 
 Iterable& LearningCycle::getIterable(void) {
     return myIterable;

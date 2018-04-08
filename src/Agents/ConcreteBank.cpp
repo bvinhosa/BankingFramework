@@ -6,6 +6,8 @@
 #include <algorithm>
 #include <sstream>
 #include <iostream>
+#include <cassert>
+#include <cmath>
 
 ConcreteBank::ConcreteBank(const std::string & givenName, int agentId, int bankId) {
     reset();
@@ -431,6 +433,7 @@ double ConcreteBank::getReturnOnEquity(void){
     double profit = balanceSheet.getProfit();
     double roe = (profit/initialEquity);
     //limited liability: can't lose more than original equity
+    assert(!std::isnan(roe));
     return std::max(-1.0,roe);
 }
 
@@ -558,10 +561,20 @@ void ConcreteBank::finishLiquidation(NonBankInvestor* investor) {
     double depositorPayout = std::min(remainingProceeds, depositMass);
     //double depositorPayout = std::max(0.0,std::min(remainingProceeds, depositMass));
     remainingProceeds -= depositorPayout;
-    double pctRepaid = depositorPayout / depositMass;
+
+    double pctRepaid;
+
+    if(depositMass == 0.0)
+        pctRepaid = 0.0;
+    else
+        pctRepaid= depositorPayout / depositMass;
+
+    assert(!std::isnan(pctRepaid));
 
     for(auto currentDeposit : deposits){
         double individualClaim = currentDeposit.second;
+
+        assert(!std::isnan(pctRepaid));
         currentDeposit.first->receiveWithdrawal(this,
                                                 pctRepaid *
                                                 individualClaim);

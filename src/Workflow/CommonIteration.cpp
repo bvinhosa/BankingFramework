@@ -10,7 +10,7 @@
 void CommonIteration::iterate(BankingSystem& system){
     //std::cout << "CommonIteration::iterate" << std::endl;
 
-    BankPointerVector banks = system.getBanks();
+    BankPointerVector banks = system.getActiveBanks();
     DepositorPointerVector depositors = system.getDepositors();
     FirmPointerVector firms = system.getFirms();
     NonBankInvestor outsideInvestor;

@@ -21,6 +21,7 @@ public:
     virtual int getDepositorId(void) const = 0;
     virtual void setUpWithdrawal(double proportionToWithdraw) = 0;
     virtual void setUpThreshold(double runThreshold) = 0;
+    virtual double getThreshold(void) = 0;
     virtual void receiveWithdrawal(Bank* bank, double amount) = 0;
     virtual void assessWithdrawal(void) = 0;
     virtual double getReturnOnDeposit(void) = 0;

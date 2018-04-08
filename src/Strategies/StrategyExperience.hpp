@@ -39,7 +39,7 @@ public:
                        StrategicAgent* agent);
 
 private:
-    double N_t = 1, N_tMinus1 = 0;
+    double N_t = 1.0, N_tMinus1 = 0.0;
 
     //initial probabilities
 

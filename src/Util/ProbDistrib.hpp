@@ -1,7 +1,6 @@
 #ifndef PROBDISTRIB_HPP
 #define PROBDISTRIB_HPP
 
-
 #include <random>
 #include <vector>
 

@@ -15,6 +15,11 @@ public:
     virtual FirmPointerVector& getFirms(void) = 0;
     virtual RiskyAssetMarket& getAssetMarket(void) = 0;
     virtual void operationalReset(void) = 0;
+
+    virtual void reactivateBanks(void) = 0;
+    virtual void deactivateBank(int bankId) = 0;
+    virtual BankPointerVector& getActiveBanks(void) = 0;
+
     virtual int howManyBanks() = 0;
     virtual int howManyDepositors() = 0;
     virtual int howManyBanksFailedSolvency(void) = 0;

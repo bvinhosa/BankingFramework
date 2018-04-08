@@ -27,6 +27,7 @@ public:
     virtual void reset(void);
     virtual void setUpWithdrawal(double proportionToWithdraw);
     virtual void setUpThreshold(double runThreshold);
+    virtual double getThreshold(void);
     virtual double getReturnOnDeposit(void);
     virtual void receiveMoney(double amount);
     virtual void makeDeposit(Bank *bank, double amount);
